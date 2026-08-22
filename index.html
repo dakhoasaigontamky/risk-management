@@ -278,6 +278,7 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
       <button class="sb-item" id="sb-nckh" onclick="switchTab('nckh')" style="display:none"><span class="sb-icon">🔬</span>NCKH</button>
       <button class="sb-item" id="sb-versions" onclick="switchTab('versions')" style="display:none"><span class="sb-icon">🕐</span>Phiên bản</button>
       <button class="sb-item" id="sb-compare" onclick="switchTab('compare')" style="display:none"><span class="sb-icon">🔀</span>So sánh</button>
+      <button class="sb-item" id="sb-lichsu" onclick="switchTab('lichsu')" style="display:none"><span class="sb-icon">📜</span>Lịch sử chỉnh sửa</button>
       <button class="sb-item" id="sb-admin" onclick="switchTab('admin')" style="display:none"><span class="sb-icon">⚙</span>Quản trị</button>
       <div class="sb-divider"></div>
       <button class="sb-item" id="sb-huongdan" onclick="switchTab('huongdan')"><span class="sb-icon">📖</span>Hướng dẫn sử dụng</button>
@@ -598,6 +599,38 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
 
           <div style="text-align:center;font-size:12px;color:var(--text3);padding:16px">Mọi thắc mắc liên hệ quản trị viên: nurse.giangha.95@gmail.com</div>
         </div>
+      </div>
+
+
+      <!-- LỊCH SỬ CHỈNH SỬA TAB -->
+      <div id="tab-content-lichsu" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:20px;font-weight:700">📜 Lịch sử chỉnh sửa</div>
+            <div style="color:var(--text2);font-size:13px;margin-top:2px">Theo dõi ai đã thay đổi gì trong hệ thống</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="ls-filter-action" onchange="renderLichSu()" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+              <option value="">Tất cả hành động</option>
+              <option value="thêm">Thêm rủi ro</option>
+              <option value="sửa">Sửa rủi ro</option>
+              <option value="xóa">Xóa rủi ro</option>
+              <option value="biện pháp">Cập nhật biện pháp</option>
+              <option value="hiệu quả">Đánh giá hiệu quả</option>
+            </select>
+            <select id="ls-filter-user" onchange="renderLichSu()" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px">
+              <option value="">Tất cả người dùng</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="renderLichSu()">🔄 Làm mới</button>
+          </div>
+        </div>
+        <div class="stats-grid" id="ls-stats"></div>
+        <div class="fmea-card" style="padding:0;overflow-x:auto;margin-top:16px">
+          <table class="fmea-table" id="ls-table">
+            <tr><td style="padding:40px;text-align:center;color:var(--text3)">Đang tải...</td></tr>
+          </table>
+        </div>
+        <div id="ls-pagination" style="display:flex;justify-content:center;gap:8px;margin-top:12px"></div>
       </div>
 
       <!-- ADMIN TAB -->
@@ -1198,7 +1231,7 @@ function closeSidebar(){
 function switchTab(tab){
   state.currentTab = tab;
   // Cập nhật active state trong sidebar
-  ['dashboard','list','fmea','hieuqua','nckh','versions','compare','guide','huongdan','admin'].forEach(t=>{
+  ['dashboard','list','fmea','hieuqua','nckh','versions','compare','guide','huongdan','lichsu','admin'].forEach(t=>{
     const sb = document.getElementById(`sb-${t}`);
     if(sb) sb.classList.toggle('active', t===tab);
     const content = document.getElementById(`tab-content-${t}`);
@@ -1212,6 +1245,7 @@ function switchTab(tab){
   if(tab==='fmea') renderFmea();
   if(tab==='hieuqua') renderHieuQua();
   if(tab==='nckh') renderNckh();
+  if(tab==='lichsu') { auditPage=0; renderLichSu(); }
   if(tab==='admin') renderAdminTab();
 }
 
@@ -1435,20 +1469,24 @@ function saveRisk(){
     const idx=state.risks.findIndex(r=>r.id===state.editingId);
     if(idx>=0){ state.risks[idx]={...state.risks[idx],...data}; savedRisk=state.risks[idx]; }
     toast('Đã cập nhật rủi ro');
+    logAction('sửa rủi ro', savedRisk.id, savedRisk.ten, `Mức độ: ${savedRisk.mucdo||'—'}`);
   } else {
     const stt=state.risks.length?Math.max(...state.risks.map(r=>r.stt||0))+1:1;
     savedRisk={id:state.nextId++,stt,...data};
     state.risks.push(savedRisk);
     state.selectedId=savedRisk.id;
     toast('Đã thêm rủi ro mới');
+    logAction('thêm rủi ro', savedRisk.id, savedRisk.ten, `Loại: ${savedRisk.loai||'—'} · Mức độ: ${savedRisk.mucdo||'—'}`);
   }
   saveState(); closeModal(); renderList(); renderDetail();
   autoSaveRisk(savedRisk);
 }
 function deleteRisk(id){
-  if(!confirm('Xác nhận xóa rủi ro này?')) return;
+  if(!confirm("Xác nhận xóa rủi ro này?")) return;
+  const _r = state.risks.find(x=>x.id===id);
   state.risks=state.risks.filter(r=>r.id!==id); state.selectedId=null;
-  saveState(); renderList(); renderDetail(); toast('Đã xóa rủi ro');
+  saveState(); renderList(); renderDetail(); toast("Đã xóa rủi ro");
+  if(_r) logAction("xóa rủi ro", id, _r.ten, "Mức độ: "+(_r.mucdo||"—"));
   autoDeleteRisk(id);
 }
 
@@ -2090,7 +2128,7 @@ function applyRoleUI(){
   const isEditor = role==='editor'||isAdmin;
 
   // Hiện/ẩn sidebar items theo role
-  ['nckh','versions','compare','admin'].forEach(t=>{
+  ['nckh','versions','compare','lichsu','admin'].forEach(t=>{
     const el = document.getElementById(`sb-${t}`);
     if(el) el.style.display = isAdmin ? '' : 'none';
   });
@@ -2108,6 +2146,101 @@ function applyRoleUI(){
   const roleCls={'admin':'role-admin','editor':'role-editor','viewer':'role-viewer'};
   const roleLabel={'admin':'Admin','editor':'Editor','viewer':'Viewer'};
   document.getElementById('user-role-badge').innerHTML=`<span class="${roleCls[role]||'role-viewer'}">${roleLabel[role]||role}</span>`;
+}
+
+// ═══ AUDIT LOG ═══
+const AUDIT_PAGE_SIZE = 50;
+let auditPage = 0;
+
+async function logAction(action, riskId, riskTen, detail){
+  if(!currentUser) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/audit_log`, {
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'return=minimal'},
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        user_name: currentUser.ho_ten || currentUser.email,
+        action, risk_id: riskId||null, risk_ten: riskTen||null, detail: detail||null
+      })
+    });
+  } catch(e){ /* im lặng — không làm phiền user nếu log fail */ }
+}
+
+async function fetchAuditLog(page=0, filterAction='', filterUser=''){
+  let url = `${SB_URL}/rest/v1/audit_log?select=*&order=created_at.desc&limit=${AUDIT_PAGE_SIZE}&offset=${page*AUDIT_PAGE_SIZE}`;
+  if(filterAction) url += `&action=ilike.*${encodeURIComponent(filterAction)}*`;
+  if(filterUser) url += `&user_name=eq.${encodeURIComponent(filterUser)}`;
+  const r = await fetch(url, {headers:SB_HEADERS});
+  return r.ok ? await r.json() : [];
+}
+
+async function renderLichSu(){
+  if(!currentUser||currentUser.role!=='admin') return;
+  const filterAction = document.getElementById('ls-filter-action')?.value||'';
+  const filterUser   = document.getElementById('ls-filter-user')?.value||'';
+
+  const logs = await fetchAuditLog(auditPage, filterAction, filterUser);
+
+  // Stats
+  const total = logs.length;
+  const byAction = {};
+  logs.forEach(l=>{ byAction[l.action]=(byAction[l.action]||0)+1; });
+  document.getElementById('ls-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Tổng thao tác (trang này)</div></div>
+    ${Object.entries(byAction).slice(0,4).map(([a,c])=>`
+    <div class="stat-card" style="border-top:3px solid var(--accent)">
+      <div class="stat-num" style="color:var(--accent)">${c}</div>
+      <div class="stat-label">${a}</div>
+    </div>`).join('')}`;
+
+  // Populate user filter
+  const users = [...new Set(logs.map(l=>l.user_name).filter(Boolean))];
+  const userSel = document.getElementById('ls-filter-user');
+  if(userSel){
+    const cur = userSel.value;
+    userSel.innerHTML = `<option value="">Tất cả người dùng</option>`
+      + users.map(u=>`<option value="${u}" ${u===cur?'selected':''}>${u}</option>`).join('');
+  }
+
+  // Table
+  const actionColor = {
+    'thêm':'#16a56e','sửa':'#3b6ef5','xóa':'#e0334c',
+    'biện pháp':'#d97706','hiệu quả':'#0891b2','nckh':'#7c4dff'
+  };
+  const table = document.getElementById('ls-table');
+  if(!logs.length){
+    table.innerHTML=`<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text3)">Chưa có lịch sử thao tác nào</td></tr>`;
+    return;
+  }
+  table.innerHTML=`
+    <tr>
+      <th style="min-width:140px">Thời gian</th>
+      <th style="min-width:130px">Người dùng</th>
+      <th style="min-width:100px">Hành động</th>
+      <th style="min-width:180px">Rủi ro</th>
+      <th style="min-width:280px">Chi tiết</th>
+    </tr>
+    ${logs.map(l=>{
+      const dt = new Date(l.created_at);
+      const timeStr = dt.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const ac = l.action||'';
+      const acColor = Object.entries(actionColor).find(([k])=>ac.toLowerCase().includes(k))?.[1]||'var(--text3)';
+      return `<tr>
+        <td style="font-size:12px;color:var(--text2);white-space:nowrap">${timeStr}</td>
+        <td style="font-weight:600;font-size:13px">${l.user_name||'—'}</td>
+        <td><span style="font-size:11px;font-weight:700;color:${acColor};background:${acColor}18;padding:2px 8px;border-radius:4px;white-space:nowrap">${ac||'—'}</span></td>
+        <td style="font-size:12px;color:var(--text2)">${l.risk_ten||'—'} ${l.risk_id?`<span style="color:var(--text3);font-family:monospace">#${l.risk_id}</span>`:''}</td>
+        <td style="font-size:12px;color:var(--text2)">${l.detail||'—'}</td>
+      </tr>`;
+    }).join('')}`;
+
+  // Pagination
+  const pg = document.getElementById('ls-pagination');
+  pg.innerHTML=`
+    <button class="btn btn-ghost btn-sm" onclick="auditPage=Math.max(0,auditPage-1);renderLichSu()" ${auditPage===0?'disabled':''}>← Trước</button>
+    <span style="padding:6px 12px;font-size:12px;color:var(--text2)">Trang ${auditPage+1}</span>
+    <button class="btn btn-ghost btn-sm" onclick="auditPage++;renderLichSu()" ${logs.length<AUDIT_PAGE_SIZE?'disabled':''}>Sau →</button>`;
 }
 
 // ═══ ADMIN — QUẢN LÝ USER ═══
@@ -2871,6 +3004,7 @@ function saveHoatDongTiep(riskId, bienphap, value){
   const m = (r.measures||[]).find(x=>x.bienphap===bienphap); if(!m) return;
   m.hoatdongtiep = value;
   saveState();
+  logAction('cập nhật biện pháp', riskId, r.ten, `Hoạt động tiếp theo: ${value}`);
   autoSaveRisk(r);
 }
 
@@ -2881,6 +3015,7 @@ function saveThietKeVanHanh(riskId, bienphap, field, value, rowIdx){
   const hq = calcHieuQua(m.thietke, m.vanhanh);
   m.hieuqua = hq;
   saveState();
+  logAction('đánh giá hiệu quả biện pháp', riskId, r.ten, `${field==='thietke'?'Thiết kế':'Vận hành'}: ${value} → Hiệu quả: ${hq||'chưa tính'}`);
   autoSaveRisk(r);
   // Cập nhật ô Hiệu quả ngay lập tức mà không render lại cả bảng
   const cell = document.getElementById(`hq-cell-${rowIdx}`);
