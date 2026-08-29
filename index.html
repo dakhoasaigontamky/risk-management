@@ -1398,8 +1398,11 @@ function openEditModal(id){
   const r=state.risks.find(x=>x.id===id); if(!r) return;
   state.editingId=id; modalMeasures=JSON.parse(JSON.stringify(r.measures||[]));
   document.getElementById('modal-title').textContent='Chỉnh sửa rủi ro';
-  const flds={'f-loai':r.loai,'f-ten':r.ten,'f-mota':r.mota,'f-nguyen':r.nguyen,'f-anhhuo':r.anhhuo,'f-donvi':r.donvi,'f-kn':r.kn,'f-tacdong':r.tacdong,'f-xuhuong':r.xuhuong,'f-hoatdong':r.hoatdong,'f-kn2':r.kn2,'f-tacdong2':r.tacdong2};
+  const flds={'f-loai':r.loai,'f-ten':r.ten,'f-mota':r.mota,'f-nguyen':r.nguyen,'f-anhhuo':r.anhhuo,'f-donvi':r.donvi,'f-kn':r.kn,'f-tacdong':r.tacdong,'f-hoatdong':r.hoatdong,'f-kn2':r.kn2,'f-tacdong2':r.tacdong2};
   Object.entries(flds).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v||'';});
+  const xuMap={'tăng':'Tăng','giảm':'Giảm','ổn định':'Ổn định'};
+  const xuNorm=xuMap[(r.xuhuong||'').toLowerCase().trim()]||r.xuhuong||'';
+  const xuEl=document.getElementById('f-xuhuong');if(xuEl)xuEl.value=xuNorm;
   const md1=calcMucDo(r.kn,r.tacdong)||r.mucdo||'';
   const md2=calcMucDo(r.kn2,r.tacdong2)||r.mucdo2||'';
   setMucDoDisplay('f-mucdo-display','f-mucdo',md1);
