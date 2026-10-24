@@ -179,6 +179,112 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
 .heatmap-cell{border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:default;transition:transform .1s;}
 .heatmap-cell:hover{transform:scale(1.1);}
 @media(max-width:1100px){.db-grid-4{grid-template-columns:repeat(2,1fr);}.db-grid-3{grid-template-columns:1fr 1fr;}}
+
+/* ═══ RESPONSIVE TABLET (max 768px) ═══ */
+@media(max-width:768px){
+  .topbar{padding:0 12px;gap:8px;height:52px;}
+  .topbar-logo{font-size:14px;padding:4px 8px;}
+  .topbar-search{flex:1;max-width:none;}
+  .topbar-right{gap:4px;}
+  /* Ẩn các nút topbar phụ trên tablet */
+  .topbar-right .btn-import-excel,
+  .topbar-right .btn-export-excel{ display:none; }
+  .content{padding:16px;}
+  .db-grid-4{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .db-grid-2{grid-template-columns:1fr 1fr;gap:10px;}
+  .db-grid-3{grid-template-columns:1fr 1fr;gap:10px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .compare-grid{grid-template-columns:1fr;}
+  .form-row-3{grid-template-columns:1fr 1fr;}
+}
+
+/* ═══ RESPONSIVE MOBILE (max 480px) ═══ */
+@media(max-width:480px){
+  /* Topbar */
+  .topbar{padding:0 10px;gap:6px;height:52px;}
+  .topbar-logo{font-size:13px;padding:4px 6px;gap:5px;}
+  .topbar-logo img{height:22px!important;}
+  /* Ẩn text logo, giữ icon */
+  .topbar-logo-text{display:none;}
+  /* Sync indicator: ẩn chữ, giữ dot */
+  #sync-label{display:none;}
+  /* User info: ẩn tên/role, giữ nút */
+  #user-name,#user-role-badge{display:none;}
+  /* Ẩn các nút topbar phụ */
+  .btn-import-excel,.btn-export-excel,.btn-add-risk{display:none!important;}
+  /* Nút đổi MK: chỉ hiện icon */
+  .btn-changepw-text{display:none;}
+
+  /* Content */
+  .content{padding:10px;}
+
+  /* Dashboard grids: 1 cột */
+  .db-grid-4{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+  .db-grid-2{grid-template-columns:1fr;gap:10px;margin-bottom:14px;}
+  .db-grid-3{grid-template-columns:1fr;gap:10px;margin-bottom:14px;}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px;}
+  .compare-grid{grid-template-columns:1fr;}
+  .kpi-num{font-size:24px;}
+  .db-card{padding:12px 14px;}
+  .db-card-title{font-size:10px;}
+
+  /* Bar chart label ngắn hơn */
+  .bar-label{width:80px;font-size:11px;}
+
+  /* Form: 1 cột */
+  .form-row{grid-template-columns:1fr;}
+  .form-row-3{grid-template-columns:1fr;}
+
+  /* Risk list */
+  .risk-item{padding:10px 12px;gap:8px;}
+  .risk-name{font-size:12px;}
+
+  /* Modal: full screen */
+  .modal-overlay{padding:0;align-items:flex-end;}
+  .modal{border-radius:14px 14px 0 0;max-height:92vh;overflow-y:auto;max-width:100%;}
+  .modal-header{padding:14px 16px 12px;}
+  .modal-body{padding:14px 16px;}
+  .modal-footer{padding:12px 16px;flex-wrap:wrap;}
+  .modal-footer .btn{flex:1;justify-content:center;}
+
+  /* Modal đổi MK / đặt lại MK */
+  #change-password-modal > div,
+  #admin-reset-password-modal > div{
+    border-radius:14px 14px 0 0;
+    max-width:100%;
+    width:100%;
+    margin-top:auto;
+    padding:20px 16px;
+  }
+  #change-password-modal,
+  #admin-reset-password-modal{align-items:flex-end;}
+
+  /* Bảng FMEA: scroll ngang */
+  .fmea-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .fmea-table{min-width:700px;}
+
+  /* Measure items: padding nhỏ */
+  .measure-item{padding:8px 10px;}
+
+  /* Topbar buttons: compact */
+  .btn-sm{padding:5px 8px;font-size:11px;}
+
+  /* Stats grid 2 col */
+  .stat-card{padding:10px 12px;}
+  .stat-num{font-size:20px;}
+
+  /* Toast: full width bottom */
+  .toast-container{bottom:16px;right:8px;left:8px;}
+  .toast{font-size:12px;}
+
+  /* Sidebar footer */
+  .sb-footer{font-size:10px;}
+
+  /* Hiện nút menu thu gọn */
+  .mobile-action-menu{display:block!important;}
+  .mobile-menu-item:hover{background:var(--surface2);}
+}
+
 @media print{
   .topbar,.sidebar,.topbar-right,.no-print{display:none!important;}
   body{background:#fff;color:#000;}
@@ -310,13 +416,22 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
           <div id="user-name" style="font-size:12px;font-weight:600;color:var(--text)"></div>
           <div id="user-role-badge"></div>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="openChangePasswordModal()" title="Đổi mật khẩu">🔑 Đổi MK</button>
+        <button class="btn btn-ghost btn-sm" onclick="openChangePasswordModal()" title="Đổi mật khẩu">🔑<span class="btn-changepw-text"> Đổi MK</span></button>
         <button class="btn btn-ghost btn-sm" onclick="doLogout()" title="Đăng xuất">↩ Thoát</button>
       </div>
       <div style="width:1px;height:20px;background:var(--border)"></div>
-      <button class="btn btn-amber btn-sm" onclick="openImportModal()">📂 Import Excel</button>
-      <button class="btn btn-ghost btn-sm" onclick="exportXlsx()">⬇ Xuất Excel</button>
-      <button class="btn btn-ghost btn-sm" onclick="openAddModal()">+ Thêm rủi ro</button>
+      <button class="btn btn-amber btn-sm btn-import-excel" onclick="openImportModal()">📂 Import Excel</button>
+      <button class="btn btn-ghost btn-sm btn-export-excel" onclick="exportXlsx()">⬇ Xuất Excel</button>
+      <button class="btn btn-ghost btn-sm btn-add-risk" onclick="openAddModal()">+ Thêm rủi ro</button>
+      <!-- Nút menu thu gọn cho mobile -->
+      <div class="mobile-action-menu" style="position:relative;display:none">
+        <button class="btn btn-ghost btn-sm" id="mobile-menu-btn" onclick="toggleMobileMenu()" style="font-size:16px;padding:5px 10px">⋮</button>
+        <div id="mobile-menu-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:500;min-width:160px;overflow:hidden">
+          <button onclick="openAddModal();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">+ Thêm rủi ro</button>
+          <button onclick="openImportModal();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">📂 Import Excel</button>
+          <button onclick="exportXlsx();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">⬇ Xuất Excel</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -388,7 +503,7 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
         </div>
         <div class="stats-grid" id="fmea-stats"></div>
         <div class="fmea-card" style="padding:0;overflow-x:auto">
-          <table class="fmea-table" id="fmea-table"></table>
+          <div class="fmea-table-wrap"><table class="fmea-table" id="fmea-table"></table></div>
         </div>
       </div>
 
@@ -439,7 +554,7 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
         </div>
 
         <div class="fmea-card" style="padding:0;overflow-x:auto">
-          <table class="fmea-table" id="hq-table"></table>
+          <div class="fmea-table-wrap"><table class="fmea-table" id="hq-table"></table></div>
         </div>
       </div>
 
@@ -474,7 +589,7 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
           <span id="nckh-count" style="font-size:12px;color:var(--text3)"></span>
         </div>
         <div class="fmea-card" style="padding:0;overflow-x:auto">
-          <table class="fmea-table" id="nckh-table"></table>
+          <div class="fmea-table-wrap"><table class="fmea-table" id="nckh-table"></table></div>
         </div>
       </div>
 
@@ -3799,6 +3914,26 @@ async function doAdminResetPassword(){
   } catch(e){ errEl.textContent='Lỗi kết nối: '+e.message; }
   btn.disabled=false; btn.textContent='Đặt lại mật khẩu';
 }
+
+// ═══════════════════════════════════════════════════════
+//  MOBILE MENU
+// ═══════════════════════════════════════════════════════
+function toggleMobileMenu(){
+  const d = document.getElementById('mobile-menu-dropdown');
+  d.style.display = d.style.display==='none' ? 'block' : 'none';
+}
+function closeMobileMenu(){
+  const d = document.getElementById('mobile-menu-dropdown');
+  if(d) d.style.display='none';
+}
+// Đóng mobile menu khi click ra ngoài
+document.addEventListener('click', function(e){
+  const btn = document.getElementById('mobile-menu-btn');
+  const dd = document.getElementById('mobile-menu-dropdown');
+  if(dd && btn && !btn.contains(e.target) && !dd.contains(e.target)){
+    dd.style.display='none';
+  }
+});
 
 </script>
 
