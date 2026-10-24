@@ -211,6 +211,7 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
   #user-name,#user-role-badge{display:none;}
   .btn-import-excel,.btn-export-excel,.btn-add-risk{display:none!important;}
   .btn-changepw-text{display:none;}
+  .btn-changepw-desktop,.btn-logout-desktop{display:none!important;}
   .topbar-right{gap:4px;flex-shrink:0;}
   .mobile-action-menu{display:block!important;}
   .mobile-menu-item:hover{background:var(--surface2);}
@@ -425,8 +426,8 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
           <div id="user-name" style="font-size:12px;font-weight:600;color:var(--text)"></div>
           <div id="user-role-badge"></div>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="openChangePasswordModal()" title="Đổi mật khẩu">🔑<span class="btn-changepw-text"> Đổi MK</span></button>
-        <button class="btn btn-ghost btn-sm" onclick="doLogout()" title="Đăng xuất">↩ Thoát</button>
+        <button class="btn btn-ghost btn-sm btn-changepw-desktop" onclick="openChangePasswordModal()" title="Đổi mật khẩu">🔑<span class="btn-changepw-text"> Đổi MK</span></button>
+        <button class="btn btn-ghost btn-sm btn-logout-desktop" onclick="doLogout()" title="Đăng xuất">↩ Thoát</button>
       </div>
       <div style="width:1px;height:20px;background:var(--border)"></div>
       <button class="btn btn-amber btn-sm btn-import-excel" onclick="openImportModal()">📂 Import Excel</button>
@@ -439,6 +440,9 @@ label{font-size:12px;color:var(--text2);font-weight:500;display:block;margin-bot
           <button onclick="openAddModal();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">+ Thêm rủi ro</button>
           <button onclick="openImportModal();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">📂 Import Excel</button>
           <button onclick="exportXlsx();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">⬇ Xuất Excel</button>
+          <div style="height:1px;background:var(--border);margin:4px 0"></div>
+          <button onclick="openChangePasswordModal();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit">🔑 Đổi mật khẩu</button>
+          <button onclick="doLogout();closeMobileMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;background:none;border:none;font-size:13px;color:var(--red);cursor:pointer;font-family:inherit">↩ Đăng xuất</button>
         </div>
       </div>
     </div>
